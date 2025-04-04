@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reinforcement Learning Algorithms</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        nav {
+            background-color: #203a43;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            padding: 1rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #aac8ff;
+        }
+        
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            padding: 1rem;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        @media (min-width: 768px) {
+            .main-container {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card h2 {
+            color: #2c5364;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e1e8f0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .algorithm-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 600px) {
+            .algorithm-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .algorithm-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .algorithm-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .algorithm-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .algorithm-img {
+            height: 180px;
+            background-color: #e1e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #2c5364;
+        }
+        
+        .algorithm-content {
+            padding: 1.5rem;
+        }
+        
+        .algorithm-content h3 {
+            margin-bottom: 0.5rem;
+            color: #2c5364;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2c5364;
+            box-shadow: 0 0 0 2px rgba(44, 83, 100, 0.2);
+        }
+        
+        .form-group input:invalid,
+        .form-group select:invalid,
+        .form-group textarea:invalid {
+            border-color: #e74c3c;
+        }
+        
+        .form-group input:valid,
+        .form-group select:valid,
+        .form-group textarea:valid {
+            border-color: #2ecc71;
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+        
+        .radio-option input {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+        
+        button[type="submit"] {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            width: 100%;
+        }
+        
+        button[type="submit"]:hover {
+            opacity: 0.9;
+        }
+        
+        footer {
+            background-color: #0f2027;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .resource-link {
+            color: #2c5364;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: block;
+            margin-bottom: 0.5rem;
+            padding: 0.25rem 0;
+        }
+        
+        .resource-link:hover {
+            color: #203a43;
+            text-decoration: underline;
+        }
+        
+        .contact-link {
+            color: #aac8ff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .contact-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .nav-links {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .menu-toggle {
+                display: block;
+                align-self: flex-end;
+                margin-top: -3.5rem;
+            }
+            
+            .algorithm-img {
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1><a href="#home" class="contact-link" style="color: white; text-decoration: none;">Reinforcement Learning Algorithms</a></h1>
+            <p>Exploring the world of autonomous decision-making systems</p>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="nav-container">
+            <div class="menu-toggle">☰</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#algorithms">Algorithms</a></li>
+                <li><a href="#applications">Applications</a></li>
+                <li><a href="#resources">Resources</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="main-container">
+        <main>
+            <section id="home" class="card">
+                <h2>Introduction to Reinforcement Learning</h2>
+                <p>Reinforcement Learning (RL) is a type of machine learning where an agent learns to make decisions by performing actions in an environment to achieve maximum cumulative reward. Unlike supervised learning, RL doesn't require labeled input/output pairs, nor does it require explicit correction of suboptimal actions.</p>
+                <p>The key components of RL are:</p>
+                <ul>
+                    <li><strong>Agent:</strong> The learner or decision maker</li>
+                    <li><strong>Environment:</strong> Everything the agent interacts with</li>
+                    <li><strong>State:</strong> A representation of the current situation</li>
+                    <li><strong>Action:</strong> What the agent can do</li>
+                    <li><strong>Reward:</strong> Feedback from the environment</li>
+                    <li><strong>Policy:</strong> Strategy that the agent employs</li>
+                </ul>
+            </section>
+            
+            <section id="algorithms" class="card">
+                <h2>Popular RL Algorithms</h2>
+                <div class="algorithm-grid">
+                    <article class="algorithm-card">
+                        <div class="algorithm-img">Q</div>
+                        <div class="algorithm-content">
+                            <h3>Q-Learning</h3>
+                            <p>A model-free RL algorithm that learns the value of an action in a particular state without requiring a model of the environment.</p>
+                        </div>
+                    </article>
+                    
+                    <article class="algorithm-card">
+                        <div class="algorithm-img">D</div>
+                        <div class="algorithm-content">
+                            <h3>Deep Q Network (DQN)</h3>
+                            <p>Combines Q-Learning with deep neural networks to allow the algorithm to learn from high-dimensional sensory inputs.</p>
+                        </div>
+                    </article>
+                    
+                    <article class="algorithm-card">
+                        <div class="algorithm-img">P</div>
+                        <div class="algorithm-content">
+                            <h3>Policy Gradient</h3>
+                            <p>Directly optimizes the policy by following the gradient of expected reward with respect to the policy parameters.</p>
+                        </div>
+                    </article>
+                    
+                    <article class="algorithm-card">
+                        <div class="algorithm-img">A</div>
+                        <div class="algorithm-content">
+                            <h3>Actor-Critic</h3>
+                            <p>Hybrid architecture that combines value-based and policy-based methods, with separate structures for policy (actor) and value function (critic).</p>
+                        </div>
+                    </article>
+                    
+                    <article class="algorithm-card">
+                        <div class="algorithm-img">P</div>
+                        <div class="algorithm-content">
+                            <h3>Proximal Policy Optimization (PPO)</h3>
+                            <p>Policy optimization algorithm that uses a clipped objective function to prevent excessively large policy updates.</p>
+                        </div>
+                    </article>
+                    
+                    <article class="algorithm-card">
+                        <div class="algorithm-img">S</div>
+                        <div class="algorithm-content">
+                            <h3>SARSA</h3>
+                            <p>On-policy TD control algorithm that updates action-value estimates based on the current state, action, reward, next state, and next action.</p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+            
+            <section id="applications" class="card">
+                <h2>RL Applications</h2>
+                <p>Reinforcement Learning has been successfully applied to numerous domains:</p>
+                <ul>
+                    <li><strong>Game Playing:</strong> AlphaGo, AlphaZero, OpenAI Five</li>
+                    <li><strong>Robotics:</strong> Autonomous navigation, manipulation tasks</li>
+                    <li><strong>Finance:</strong> Algorithmic trading, portfolio management</li>
+                    <li><strong>Healthcare:</strong> Treatment strategies, personalized medicine</li>
+                    <li><strong>Autonomous Vehicles:</strong> Decision making in complex traffic scenarios</li>
+                    <li><strong>Recommendation Systems:</strong> Personalized content delivery</li>
+                </ul>
+            </section>
+        </main>
+        
+        <aside>
+            <section id="newsletter" class="card">
+                <h2>Subscribe to our Newsletter</h2>
+                <form id="contact-form" action="#" method="post" novalidate>
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required minlength="2" maxlength="50">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="interest">Primary Interest:</label>
+                        <select id="interest" name="interest" required>
+                            <option value="">Select an option</option>
+                            <option value="theory">RL Theory</option>
+                            <option value="applications">RL Applications</option>
+                            <option value="research">Latest Research</option>
+                            <option value="tutorials">Tutorials</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Experience Level:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="beginner" name="experience" value="beginner" required>
+                                <label for="beginner">Beginner</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="intermediate" name="experience" value="intermediate">
+                                <label for="intermediate">Intermediate</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="advanced" name="experience" value="advanced">
+                                <label for="advanced">Advanced</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Questions/Comments:</label>
+                        <textarea id="message" name="message" rows="4" maxlength="500"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="checkbox" id="consent" name="consent" required>
+                        <label for="consent" style="display: inline;">I agree to receive emails</label>
+                    </div>
+                    
+                    <button type="submit">Subscribe</button>
+                </form>
+            </section>
+            
+            <section id="resources" class="card">
+                <h2>Learning Resources</h2>
+                <a href="http://incompleteideas.net/book/the-book-2nd.html" class="resource-link" target="_blank">Reinforcement Learning: An Introduction (Sutton & Barto)</a>
+                <a href="https://www.packtpub.com/product/deep-reinforcement-learning-hands-on-second-edition/9781838826994" class="resource-link" target="_blank">Deep Reinforcement Learning Hands-On</a>
+                <a href="https://spinningup.openai.com/en/latest/" class="resource-link" target="_blank">OpenAI Spinning Up in Deep RL</a>
+                <a href="http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html" class="resource-link" target="_blank">David Silver's RL Course</a>
+                <a href="http://rail.eecs.berkeley.edu/deeprlcourse/" class="resource-link" target="_blank">Berkeley Deep RL Course</a>
+            </section>
+
+            <section id="contact" class="card">
+                <h2>Contact Us</h2>
+                <p>Have questions about reinforcement learning?</p>
+                <p>Email us at: <a href="mailto:info@rlhub.example.com" class="contact-link">info@rlhub.example.com</a></p>
+                <p>Visit our GitHub: <a href="https://github.com/example/rlhub" class="contact-link" target="_blank">github.com/example/rlhub</a></p>
+            </section>
+        </aside>
+    </div>
+    
+    <footer>
+        <div class="footer-container">
+            <p>&copy; 2025 Reinforcement Learning Hub. All rights reserved.</p>
+            <p>Contact: <a href="mailto:info@rlhub.example.com" class="contact-link">info@rlhub.example.com</a></p>
+        </div>
+    </footer>
+</body>
+</html>

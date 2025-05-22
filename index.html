@@ -9,6 +9,7 @@
     <meta http-equiv="refresh" content="60">
     <title>Reinforcement Learning Algorithms</title>
     <style>
+        /* Ваши существующие стили */
         * {
             margin: 0;
             padding: 0;
@@ -297,6 +298,83 @@
                 height: 120px;
             }
         }
+
+        /* Новые стили */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .gallery-item {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+
+        .popup-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .popup-controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            transform: translateY(-50%);
+        }
+
+        .arrow-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        .popup-message {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -400,6 +478,17 @@
                     <li><strong>Autonomous Vehicles:</strong> Decision making in complex traffic scenarios</li>
                     <li><strong>Recommendation Systems:</strong> Personalized content delivery</li>
                 </ul>
+
+                <!-- Добавленная галерея -->
+                <section id="gallery" class="card">
+                    <h2>Gallery</h2>
+                    <div class="gallery-grid">
+                        <!-- Замените src на реальные пути к изображениям -->
+                        <img src="rl1.jpg" alt="RL example 1" class="gallery-item">
+                        <img src="rl2.jpg" alt="RL example 2" class="gallery-item">
+                        <img src="rl3.jpg" alt="RL example 3" class="gallery-item">
+                    </div>
+                </section>
             </section>
         </main>
         
@@ -484,5 +573,161 @@
             <p>Contact: <a href="mailto:info@rlhub.example.com" class="contact-link">info@rlhub.example.com</a></p>
         </div>
     </footer>
+
+    <!-- Попапы -->
+    <div id="popup" class="popup">
+        <span class="close">&times;</span>
+        <img class="popup-content" id="popup-img">
+        <div class="popup-controls">
+            <button id="prev-btn" class="arrow-btn">❮</button>
+            <button id="next-btn" class="arrow-btn">❯</button>
+        </div>
+    </div>
+
+    <div id="timer-popup" class="popup-message">
+        <span class="close">&times;</span>
+        <p>Специальное предложение! Только сегодня скидка 20% на все курсы!</p>
+    </div>
+
+    <!-- SVG элемент -->
+    <svg id="animated-svg" width="100" height="100" style="position: fixed; bottom: 20px; right: 20px;">
+        <circle cx="50" cy="50" r="40" stroke="#2c5364" stroke-width="2" fill="transparent"/>
+    </svg>
+
+    <script>
+        // Галерея
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        const popup = document.getElementById('popup');
+        const popupImg = document.getElementById('popup-img');
+        let currentIndex = 0;
+
+        function updateArrows() {
+            document.getElementById('prev-btn').style.visibility = currentIndex > 0 ? 'visible' : 'hidden';
+            document.getElementById('next-btn').style.visibility = currentIndex < galleryItems.length - 1 ? 'visible' : 'hidden';
+        }
+
+        galleryItems.forEach((item, index) => {
+            item.addEventListener('click', () => {
+                currentIndex = index;
+                popupImg.src = item.src;
+                popup.style.display = 'block';
+                updateArrows();
+            });
+        });
+
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if(currentIndex > 0) popupImg.src = galleryItems[--currentIndex].src;
+            updateArrows();
+        });
+
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if(currentIndex < galleryItems.length - 1) popupImg.src = galleryItems[++currentIndex].src;
+            updateArrows();
+        });
+
+        document.querySelectorAll('.close').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.parentElement.style.display = 'none';
+                if(btn.parentElement.id === 'timer-popup') {
+                    localStorage.setItem('popupClosed', 'true');
+                }
+            });
+        });
+
+        // Валидация формы
+        const form = document.getElementById('contact-form');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            // Валидация
+            const email = form.email.value;
+            const message = form.message.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const textRegex = /^[a-zA-Zа-яА-Я0-9\s,.!?()-]+$/;
+
+            if(!emailRegex.test(email)) {
+                alert('Invalid email');
+                return;
+            }
+
+            if(message && !textRegex.test(message)) {
+                alert('Invalid characters in message');
+                return;
+            }
+
+            // Изменение кнопки
+            submitBtn.textContent = 'Sending...';
+            submitBtn.style.backgroundColor = '#2ecc71';
+            submitBtn.disabled = true;
+
+            try {
+                //заглушка
+                await fetch('https://your-api-endpoint.com/submit', {
+                    method: 'POST',
+                    body: new FormData(form)
+                });
+                
+                submitBtn.textContent = 'Success!';
+                setTimeout(() => {
+                    submitBtn.textContent = 'Subscribe';
+                    submitBtn.style.backgroundColor = '';
+                    submitBtn.disabled = false;
+                }, 2000);
+            } catch (error) {
+                alert('Error submitting form');
+                submitBtn.textContent = 'Subscribe';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Таймер до диплома
+        function updateTimer() {
+            const targetDate = new Date('2028-07-01');
+            const now = new Date();
+            const diff = targetDate - now;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (86400000)) / (3600000));
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            
+            document.getElementById('timer').innerHTML = 
+                `${days}d ${hours}h ${minutes}m left`;
+        }
+
+        setInterval(updateTimer, 60000);
+        updateTimer();
+
+        // Фиксация меню
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if(window.scrollY > window.innerHeight) {
+                nav.style.position = 'sticky';
+                nav.style.top = '0';
+            } else {
+                nav.style.position = 'static';
+            }
+        });
+
+        // Анимация SVG
+        const svg = document.getElementById('animated-svg');
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth * 50;
+            const y = e.clientY / window.innerHeight * 50;
+            svg.style.transform = `translate(${x}px, ${y}px)`;
+        });
+
+        window.addEventListener('scroll', () => {
+            const rotation = window.scrollY % 360;
+            svg.style.transform = `rotate(${rotation}deg)`;
+        });
+
+        // Всплывающее сообщение
+        if(!localStorage.getItem('popupClosed')) {
+            setTimeout(() => {
+                document.getElementById('timer-popup').style.display = 'block';
+            }, 30000);
+        }
+    </script>
 </body>
 </html>

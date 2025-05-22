@@ -777,20 +777,27 @@ setInterval(updateTimer, 1000);
             }
         });
 
-        // Анимация SVG
         const svg = document.getElementById('animated-svg');
-        document.addEventListener('mousemove', (e) => {
-            const x = e.clientX / window.innerWidth * 50;
-            const y = e.clientY / window.innerHeight * 50;
-            svg.style.transform = `translate(${x}px, ${y}px)`;
-        });
+let rotation = 0;
 
-        window.addEventListener('scroll', () => {
-            const rotation = window.scrollY % 360;
-            svg.style.transform = `rotate(${rotation}deg)`;
-        });
+svg.addEventListener('mousemove', (e) => {
+    const rect = svg.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    svg.style.transform = `rotate(${rotation}deg) 
+        translate(${(x - 60)/4}px, ${(y - 60)/4}px)`;
+    rotation = (rotation + 0.5) % 360;
+});
 
-        // Всплывающее сообщение
+svg.addEventListener('click', () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+});
+</script>
+<script>
         if(!localStorage.getItem('popupClosed')) {
             setTimeout(() => {
                 document.getElementById('timer-popup').style.display = 'block';
